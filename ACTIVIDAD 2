@@ -1,0 +1,62 @@
+import networkx as nx
+import pandas as pd
+from heapq import heappush, heappop
+
+# Definición de estaciones y conexiones
+estaciones = {
+    "A": ["B", "C"],
+    "B": ["A", "C", "D"],
+    "C": ["A", "B", "E"],
+    "D": ["B", "E"],
+    "E": ["C", "D"],
+}
+
+# Definición de reglas (tiempo, costo, preferencia)
+reglas = {
+    ("A", "B"): {"tiempo": 10, "costo": 2, "preferencia": 1},
+    ("A", "C"): {"tiempo": 15, "costo": 3, "preferencia": 2},
+    ("B", "C"): {"tiempo": 5, "costo": 1, "preferencia": 1},
+    ("B", "D"): {"tiempo": 10, "costo": 2, "preferencia": 2},
+    ("C", "E"): {"tiempo": 12, "costo": 3, "preferencia": 1},
+    ("D", "E"): {"tiempo": 8, "costo": 2, "preferencia": 2},
+}
+class SistemaTransporte:
+    def __init__(self, base_conocimiento):
+        self.grafo = defaultdict(list)
+        self.reglas = base_conocimiento
+        self.construir_grafo()
+
+    def construir_grafo(self):
+        for regla in self.reglas:
+            origen, destino, condicion = regla
+            self.grafo[origen].append((destino, condicion))
+
+    def encontrar_ruta(self, origen, destino):
+        visitados = set()
+        ruta = []
+        self._encontrar_ruta(origen, destino, ruta, visitados)
+        return ruta
+
+    def _encontrar_ruta(self, origen, destino, ruta, visitados):
+        if origen == destino:
+            return True
+
+        visitados.add(origen)
+        for vecino, condicion in self.grafo[origen]:
+            if not condicion or self._evaluar_condicion(condicion):
+                ruta.append(vecino)
+                if self._encontrar_ruta(vecino, destino, ruta, visitados):
+                    return True
+                ruta.pop()
+
+        return False
+
+    def _evaluar_condicion(self, condicion):
+        # Implementar la lógica para evaluar la condición
+        # La lógica puede depender del contexto del problema
+        # Ejemplo:
+        # if condicion == "hora_pico":
+        #     return True
+        # else:
+        #     return False
+        pass
